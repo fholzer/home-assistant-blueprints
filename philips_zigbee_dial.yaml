@@ -62,10 +62,6 @@ blueprint:
 mode: restart
 max_exceeded: silent
 variables:
-  first_light: !input "first_light"
-  second_light: !input "second_light"
-  third_light: !input "third_light"
-  fourth_light: !input "fourth_light"
   current_light: !input "current_light"
   dim_scale: !input "dim_scale"
   lights:
@@ -103,7 +99,7 @@ action:
                       value: first_light
       - conditions:
           - "{{ command == 'recall' }}"
-          - "{{ second_light != none }}"
+          - "{{ lights.second_light != none }}"
           - "{{ scene == 0 }}"
         sequence:
           - service: homeassistant.toggle
@@ -118,7 +114,7 @@ action:
                       value: second_light
       - conditions:
           - "{{ command == 'recall' }}"
-          - "{{ third_light != none }}"
+          - "{{ lights.third_light != none }}"
           - "{{ scene == 5 }}"
         sequence:
           - service: homeassistant.toggle
@@ -133,7 +129,7 @@ action:
                       value: third_light
       - conditions:
           - "{{ command == 'recall' }}"
-          - "{{ fourth_light != none }}"
+          - "{{ lights.fourth_light != none }}"
           - "{{ scene == 4 }}"
         sequence:
           - service: homeassistant.toggle
