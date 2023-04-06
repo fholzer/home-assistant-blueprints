@@ -1,8 +1,10 @@
 blueprint:
   name: Philips Tap Dial Switch
-  description: 'Control lights with a Philips Hue Tap Switch.
+  description: |
+    Control lights with a Philips Hue Tap Switch.
     Use the four buttons to control up to four light(s) with an on/off toggle. The dial can be used to dim the most recently used light.
-    '
+    Thia blueprint is based on apollo1220's work.
+  # https://github.com/apollo1220/blueprints/blob/main/philips_zigbee_dial.yaml
   domain: automation
   input:
     remote:
