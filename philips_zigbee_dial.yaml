@@ -79,9 +79,9 @@ action:
       command: "{{ trigger.event.data.command }}"
       args: "{{ trigger.event.data.args }}"
       params: "{{ trigger.event.data.params }}"
-      scene: "{{ trigger.event.data.params.scene_id }}"
-      step_mode: "{{ trigger.event.data.params.step_mode }}"
-      step_size: "{{ trigger.event.data.params.step_size }}"
+      scene: "{{ trigger.event.data.params.scene_id | default('') }}"
+      step_mode: "{{ trigger.event.data.params.step_mode | default('') }}"
+      step_size: "{{ trigger.event.data.params.step_size | default(0) }}"
   - choose:
       - conditions:
           - "{{ command == 'recall' }}"
