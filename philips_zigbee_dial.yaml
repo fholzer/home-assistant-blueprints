@@ -62,6 +62,7 @@ blueprint:
 mode: restart
 max_exceeded: silent
 variables:
+  default_light: "first_light"
   current_light: !input "current_light"
   dim_scale: !input "dim_scale"
   lights:
@@ -146,35 +147,17 @@ action:
           - "{{ command == 'step_with_on_off' }}"
           - "{{ step_mode == 'StepMode.Up' }}"
         sequence:
-          - choose:
-              - conditions: "{{ current_light != none }}"
-                sequence:
-                  - service: light.turn_on
-                    target: "{{ lights[states(current_light)] }}"
-                    data:
-                      brightness_step_pct: "{{ step_size * dim_scale }}"
-                      transition: 1
-            default:
-              - service: light.turn_on
-                target: !input "first_light"
-                data:
-                  brightness_step_pct: "{{ step_size * dim_scale }}"
-                  transition: 1
+          - service: light.turn_on
+            target: "{{ lights[(states(current_light) | default(False)) or default_light] }}"
+            data:
+              brightness_step_pct: "{{ step_size * dim_scale }}"
+              transition: 1
       - conditions:
           - "{{ command == 'step_with_on_off' }}"
           - "{{ step_mode == 'StepMode.Down' }}"
         sequence:
-          - choose:
-              - conditions: "{{ current_light != none }}"
-                sequence:
-                  - service: light.turn_on
-                    target: "{{ lights[states(current_light)] }}"
-                    data:
-                      brightness_step_pct: "{{ -step_size * dim_scale }}"
-                      transition: 1
-            default:
-              - service: light.turn_on
-                target: !input "first_light"
-                data:
-                  brightness_step_pct: "{{ -step_size * dim_scale }}"
-                  transition: 1
+          - service: light.turn_on
+            target: "{{ lights[(states(current_light) | default(False)) or default_light] }}"
+            data:
+              brightness_step_pct: "{{ -step_size * dim_scale }}"
+              transition: 1
