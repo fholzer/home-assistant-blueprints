@@ -34,9 +34,9 @@ blueprint:
       selector:
         target:
           entity: {}
-    forth_light:
-      name: (OPTIONAL) Forth Light
-      description: The light(s) to control with forth button
+    fourth_light:
+      name: (OPTIONAL) Fourth Light
+      description: The light(s) to control with fourth button
       default: {}
       selector:
         target:
@@ -65,14 +65,14 @@ variables:
   first_light: !input "first_light"
   second_light: !input "second_light"
   third_light: !input "third_light"
-  forth_light: !input "forth_light"
+  fourth_light: !input "fourth_light"
   current_light: !input "current_light"
   dim_scale: !input "dim_scale"
   lights:
     first_light: !input "first_light"
     second_light: !input "second_light"
     third_light: !input "third_light"
-    forth_light: !input "forth_light"
+    fourth_light: !input "fourth_light"
 trigger:
   - platform: event
     event_type: zha_event
@@ -133,11 +133,11 @@ action:
                       value: third_light
       - conditions:
           - "{{ command == 'recall' }}"
-          - "{{ forth_light != none }}"
+          - "{{ fourth_light != none }}"
           - "{{ scene == 4 }}"
         sequence:
           - service: homeassistant.toggle
-            target: !input "forth_light"
+            target: !input "fourth_light"
           - choose:
               - conditions: "{{ current_light != none }}"
                 sequence:
@@ -145,7 +145,7 @@ action:
                     target:
                       entity_id: !input "current_light"
                     data:
-                      value: forth_light
+                      value: fourth_light
       - conditions:
           - "{{ command == 'step_with_on_off' }}"
           - "{{ step_mode == 'StepMode.Up' }}"
