@@ -41,10 +41,24 @@ blueprint:
       selector:
         target:
           entity: {}
+    dimmer_light:
+      name: Dimmer Light
+      description: >
+        The light(s) to control with the dimmer. If unspecified, dimms
+        the light last controlled via buttons.
+      default: {}
+      selector:
+        target:
+          entity: {}
     current_light:
       name: (OPTIONAL) Current Light
-      description:
-        'Text helper to track the current light to dim. Set for the dimmer controls to change which light they are controlling according to the last one turned on.'
+      description: >
+        Text helper to track the current light to dim. Set for the
+        dimmer controls to change which light they are controlling
+        according to the last one turned on.
+
+        Used when Dimmer Light is not set. If both are not set, alway
+        dimms First Light.
       default:
       selector:
         entity:
@@ -64,6 +78,7 @@ max_exceeded: silent
 variables:
   default_light: "first_light"
   current_light: !input "current_light"
+  dimmer_light: !input "dimmer_light"
   dim_scale: !input "dim_scale"
   lights:
     first_light: !input "first_light"
@@ -152,7 +167,7 @@ action:
           - "{{ step_mode == 'StepMode.Up' }}"
         sequence:
           - service: light.turn_on
-            target: "{{ lights[(states(current_light) | default(False)) or default_light] }}"
+            target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
             data:
               brightness_step_pct: "{{ step_size * dim_scale }}"
               transition: 1
@@ -161,7 +176,7 @@ action:
           - "{{ step_mode == 'StepMode.Down' }}"
         sequence:
           - service: light.turn_on
-            target: "{{ lights[(states(current_light) | default(False)) or default_light] }}"
+            target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
             data:
               brightness_step_pct: "{{ -step_size * dim_scale }}"
               transition: 1
