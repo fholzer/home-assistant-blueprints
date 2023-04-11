@@ -177,7 +177,7 @@ action:
           - "{{ step_mode == 'StepMode.Up' }}"
         sequence:
           - service: light.turn_on
-            target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
+            target: "{{ (dimmer_light | default(false)) or lights[(states(current_light) | default(False)) or default_light] }}"
             data:
               brightness_step_pct: "{{ step_size * dim_scale }}"
               transition: "{{ transition_time }}"
@@ -186,7 +186,7 @@ action:
           - "{{ step_mode == 'StepMode.Down' }}"
         sequence:
           - service: light.turn_on
-            target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
+            target: "{{ (dimmer_light | default(false)) or lights[(states(current_light) | default(False)) or default_light] }}"
             data:
               brightness_step_pct: "{{ -step_size * dim_scale }}"
               transition: "{{ transition_time }}"
