@@ -1,0 +1,64 @@
+blueprint:
+  name: Philips Tap Dial for TV
+  description: |
+    Control volume of a TV using a Philips Tap Dial.
+    The buttons of the tap dial are ignored.
+
+    Tested on LG UF860V-ZA
+  domain: automation
+  homeassistant:
+    min_version: "2023.4.0"
+  input:
+    remote:
+      name: Philips Hue Tap Switch
+      selector:
+        device:
+          integration: zha
+          manufacturer: Signify Netherlands B.V.
+          model: RDM002
+    tv:
+      name: Media Renderer
+      description: >
+        The TV to control using the tap dial.
+
+        The TV must support the VOLUME_SET feature.
+      selector:
+        entity:
+          multiple: false
+          filter:
+            - device_class: tv
+              supported_features:
+                - media_player.MediaPlayerEntityFeature.VOLUME_SET
+    dim_scale:
+      name: Scale
+      description: Scale factor. This value will be multiplied by the value given from the dial. So lower number, more fine grained control.
+      default: 0.1
+      selector:
+        number:
+          min: 0.0
+          max: 0.2
+          step: 0.02
+  source_url: https://github.com/fholzer/home-assistant-blueprints/blob/main/philips_zigbee_dial_for_tv.yaml
+mode: restart
+max_exceeded: silent
+variables:
+  tv: !input "tv"
+  dim_scale: !input "dim_scale"
+trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_id: !input "remote"
+action:
+  - choose:
+      - conditions:
+          - "{{ trigger.event.data.command == 'step_with_on_off' }}"
+        sequence:
+          - variables:
+              step_mode_factor: "{{ 1.0 if trigger.event.data.params.step_mode == 0 else -1.0 }}"
+              step_size: "{{ trigger.event.data.params.step_size | default(0) }}"
+          - service: media_player.volume_set
+            data:
+              volume_level: "{{ state_attr(tv, 'volume_level') + ((step_size / 100.0) * dim_scale * step_mode_factor) }}"
+            target:
+              entity_id: "{{ tv }}"
