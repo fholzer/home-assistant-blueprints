@@ -72,6 +72,15 @@ blueprint:
           min: 0.0
           max: 5.0
           step: 0.01
+    transition_time:
+      name: Transition Time
+      description: Number of seconds to transition to target brightness when using dimmer.
+      default: 0.5
+      selector:
+        number:
+          min: 0.0
+          max: 5.0
+          step: 0.01
   source_url: https://github.com/fholzer/home-assistant-blueprints/blob/main/philips_zigbee_dial.yaml
 mode: restart
 max_exceeded: silent
@@ -80,6 +89,7 @@ variables:
   current_light: !input "current_light"
   dimmer_light: !input "dimmer_light"
   dim_scale: !input "dim_scale"
+  transition_time: !input "transition_time"
   lights:
     first_light: !input "first_light"
     second_light: !input "second_light"
@@ -170,7 +180,7 @@ action:
             target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
             data:
               brightness_step_pct: "{{ step_size * dim_scale }}"
-              transition: 1
+              transition: "{{ transition_time }}"
       - conditions:
           - "{{ command == 'step_with_on_off' }}"
           - "{{ step_mode == 'StepMode.Down' }}"
@@ -179,4 +189,4 @@ action:
             target: "{{ dimmer_light | default(lights[(states(current_light) | default(False)) or default_light]) }}"
             data:
               brightness_step_pct: "{{ -step_size * dim_scale }}"
-              transition: 1
+              transition: "{{ transition_time }}"
