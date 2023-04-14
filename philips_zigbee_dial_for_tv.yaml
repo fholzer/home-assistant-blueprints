@@ -1,10 +1,15 @@
 blueprint:
   name: Philips Tap Dial for TV
-  description: |
+  description: >-
     Control volume of a TV using a Philips Tap Dial.
-    The buttons of the tap dial are ignored.
 
-    Tested on LG UF860V-ZA
+
+    The buttons of the tap dial are ignored - they can be used
+    separately via standard automations.
+
+
+    Tested on LG UF860V-ZA. How well this works for you TV depends on
+    TV and the HA integration used to control it.
   domain: automation
   homeassistant:
     min_version: "2023.4.0"
