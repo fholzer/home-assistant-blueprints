@@ -1,0 +1,47 @@
+blueprint:
+  name: Water Leak Alert
+  author: Ferdinand Holzer
+  description: Sends a notification to a mobile device with the Home Assistant app installed to alert users to water leaks.
+  domain: automation
+  input:
+    water_leak_sensor:
+      name: Water Leak Sensors
+      description: These sensors will be alerted on, in case any of them detect a water leak.
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: binary_sensor
+              device_class: moisture
+    mobile_device:
+      name: Mobile Device
+      description: Mobile device to alert of water leaks.
+      selector:
+          device:
+            integration: mobile_app
+            multiple: true
+
+variables:
+  notification_targets: !input mobile_device
+
+triggers:
+  - trigger: state
+    entity_id: !input water_leak_sensor
+
+actions:
+  - repeat:
+      for_each: "{{ notification_targets }}"
+      sequence:
+        - action: "notify.mobile_app_{{ device_attr(repeat.item, 'name') | replace(' ', '_') }}"
+          metadata: {}
+          data:
+            message: "{{ trigger.to_state.attributes.friendly_name }} alert!"
+            title: Water Leak Alert
+            data:
+              ttl: 0
+              priority: high
+              channel: alarm_stream
+              media_stream: alarm_stream_max
+              tag: Water Leak Alert
+              url: entityId:{{trigger.entity_id}}
+              clickAction: entityId:{{trigger.entity_id}}
