@@ -27,6 +27,7 @@ variables:
 triggers:
   - trigger: state
     entity_id: !input water_leak_sensor
+    to: "on"
 
 actions:
   - repeat:
